@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 
-const persons = [
+let persons = [
     { 
       "id": 1,
       "name": "Arto Hellas", 
@@ -32,6 +32,21 @@ app.get('/', (request, response) => {
 app.get('/api/persons', (request, response) => {
     response.json(persons)
   })
+
+
+app.get('/info', (request, response) => {
+    const currentDate = new Date().toLocaleString();
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+        response.send(`
+            <div>
+                <p>Phonebook has info for ${persons.length} people</p>
+            </div>
+            <div>
+                <p>${currentDate} (${timeZone})</p>
+            </div>`
+        )
+        
+})
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
