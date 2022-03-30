@@ -2,6 +2,10 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 const morgan = require('morgan')
+const cors = require('cors')
+
+app.use(cors())
+
 
 app.use(morgan((tokens, req, res) => {
   return [
