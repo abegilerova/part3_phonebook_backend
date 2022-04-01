@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express')
 const app = express()
-app.use(express.json())
+
 const morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
@@ -10,6 +10,8 @@ const Person = require('./models/person')
 
 app.use(cors())
 app.use(express.static('build'))
+app.use(express.json())
+
 
 // const url =
 // `mongodb+srv://fullstackmongo:Beknazar1@cluster0.jpc0j.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
@@ -25,6 +27,18 @@ app.use(morgan((tokens, req, res) => {
     JSON.stringify(req.body)
   ].join(' ')
 }))
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
@@ -86,8 +100,7 @@ app.post('/api/persons/', (request, response) => {
     return response.status(400).json({
       error: 'number is missing'
     })
-
-    }
+  }
 
   const person = new Person({
     // id: generateId(),
@@ -98,6 +111,20 @@ app.post('/api/persons/', (request, response) => {
   person.save().then(savedPerson =>{
     response.json(savedPerson)
   })
+})
+
+app.put('/api/persons/:id', (request, response, next)=>{
+  const body = request.body
+
+  const person = {
+    name: body.name,
+    number: body.number
+  }
+
+  Person.findByIdAndUpdate(request.params.id, person, {new: true})
+  .then (updatedPerson => {
+    response.json(updatedPerson)
+  }).catch(error => next(error))
 })
 
 const PORT = process.env.PORT || 3001
