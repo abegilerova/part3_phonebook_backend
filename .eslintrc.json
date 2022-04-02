@@ -1,4 +1,4 @@
-
+{
     "env": {
       "commonjs": true,
       "es2021": true,
@@ -33,6 +33,8 @@
       "arrow-spacing": [
         "error", { "before": true, "after": true }
       ],
-      "no-console": 0,
+      "no-console": 0
     }
+}
+
   
